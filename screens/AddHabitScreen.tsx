@@ -10,8 +10,17 @@ const AddHabitScreen: React.FC = () => {
   const router = useRouter();
 
   const handleSubmit = async () => {
+    if (!name.trim()) {
+      Alert.alert('Validation Error', 'Habit name cannot be empty.');
+      return;
+    }
+    const freqNum = parseInt(frequency);
+    if (!frequency || isNaN(freqNum) || freqNum <= 0) {
+      Alert.alert('Validation Error', 'Frequency must be a number greater than 0.');
+      return;
+    }
     try {
-      await addHabit(name, parseInt(frequency));
+      await addHabit(name, freqNum);
       Alert.alert('Habit added!');
       router.back(); // go back to main screen
     } catch (err) {

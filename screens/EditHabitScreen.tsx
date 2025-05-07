@@ -1,50 +1,70 @@
+// screens/EditHabitScreen.tsx
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, Button, Alert, Switch, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc
-} from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { getHabit, saveHabit, deleteHabit, toggleArchiveHabit } from '../services/editHabit';
+import { startOfWeek } from 'date-fns';
 
 const EditHabitScreen: React.FC = () => {
   const router = useRouter();
-  const { habitId } = useLocalSearchParams();
+  const { habitId, weekStart } = useLocalSearchParams();
   const userId = 'wLOSk2y7kPMpQxVWCbZ2';
 
   const [name, setName] = useState('');
   const [frequency, setFrequency] = useState('');
+  const [isArchived, setIsArchived] = useState(false);
+  const [archiveRanges, setArchiveRanges] = useState<any[]>([]);
+  const viewWeekStart = new Date(weekStart as string);
 
   useEffect(() => {
     const loadHabit = async () => {
-      const docRef = doc(db, `users/${userId}/habits/${habitId}`);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setName(data.habitName || '');
-        setFrequency((data.frequency || '').toString());
+      const habit = await getHabit(userId, habitId as string);
+      if (habit) {
+        setName(habit.habitName || '');
+        setFrequency((habit.frequency || '').toString());
+        const ranges = habit.archiveRanges || [];
+        setArchiveRanges(ranges);
+        setIsArchived(ranges.some((r: any) => !r.end));
       }
     };
     loadHabit();
   }, [habitId]);
 
   const handleSave = async () => {
-    const ref = doc(db, `users/${userId}/habits/${habitId}`);
-    await updateDoc(ref, {
+    if (!name.trim()) {
+      Alert.alert('Validation Error', 'Habit name cannot be empty.');
+      return;
+    }
+  
+    const freqNum = parseInt(frequency);
+    if (!frequency || isNaN(freqNum) || freqNum <= 0) {
+      Alert.alert('Validation Error', 'Frequency must be a number greater than 0.');
+      return;
+    }
+    await saveHabit(userId, habitId as string, {
       habitName: name,
-      frequency: parseInt(frequency)
+      frequency: frequency
     });
     Alert.alert('Updated!');
     router.back();
   };
 
   const handleDelete = async () => {
-    const ref = doc(db, `users/${userId}/habits/${habitId}`);
-    await deleteDoc(ref);
+    await deleteHabit(userId, habitId as string);
     Alert.alert('Deleted!');
     router.replace('/');
+  };
+
+  const handleToggleArchive = async () => {
+    const newRanges = await toggleArchiveHabit(
+      userId,
+      habitId as string,
+      isArchived,
+      archiveRanges,
+      viewWeekStart
+    );
+    setArchiveRanges(newRanges);
+    setIsArchived(!isArchived);
   };
 
   return (
@@ -62,6 +82,10 @@ const EditHabitScreen: React.FC = () => {
         onChangeText={setFrequency}
         style={{ borderBottomWidth: 1, marginBottom: 10 }}
       />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+        <Switch value={isArchived} onValueChange={handleToggleArchive} />
+        <Text style={{ marginLeft: 10 }}>{isArchived ? 'Unarchive' : 'Archive'} Habit</Text>
+      </View>
       <Button title="Save Changes" onPress={handleSave} />
       <View style={{ marginTop: 10 }}>
         <Button title="Delete Habit" color="red" onPress={handleDelete} />

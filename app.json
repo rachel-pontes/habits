@@ -1,15 +1,17 @@
 {
   "expo": {
-    "name": "habits",
+    "name": "HabitByBit",
     "slug": "habits",
     "version": "1.0.0",
+    "buildNumber": "1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "habits",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rachel.HabitByBit"
     },
     "android": {
       "adaptiveIcon": {
@@ -37,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1ede318c-c997-4bc3-af81-045a02886aad"
+      }
     }
   }
 }
