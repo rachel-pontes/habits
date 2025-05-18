@@ -1,6 +1,8 @@
 // firebaseConfig.js
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+// import { getAuth } from 'firebase/auth';
+
 // import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
@@ -16,7 +18,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// ✅ Add Firestore export
+// export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // Optional: only works in browser, not needed in React Native
