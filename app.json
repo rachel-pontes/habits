@@ -3,13 +3,13 @@
     "name": "HabitByBit",
     "slug": "habits",
     "version": "1.0.0",
-    "buildNumber": "2",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "habits",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "buildNumber": "2",
       "supportsTablet": true,
       "bundleIdentifier": "com.rachel.HabitByBit"
     },
