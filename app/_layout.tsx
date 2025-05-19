@@ -10,7 +10,9 @@ export default function Layout() {
       const hasPermission = await requestNotificationPermission();
       if (hasPermission) {
         // Schedule the reminder for 9 PM (21:00)
-        await scheduleDailyReminder(14, 48);
+        await scheduleDailyReminder(15, 25);
+        await scheduleDailyReminder(15, 30);
+        await scheduleDailyReminder(21, 0);
       }
     }
     setupNotifications();
